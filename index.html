@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW UNIT - النظام العملي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #1a1a1a;
+            color: #808080;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #666;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            color: #666;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .card {
+            background: rgba(50, 50, 50, 0.8);
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            color: #777;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        textarea {
+            width: 100%;
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid #666;
+            border-radius: 4px;
+            color: #aaa;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 10px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #777;
+        }
+        
+        button {
+            background: #555;
+            color: #ccc;
+            border: 1px solid #666;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #666;
+            color: #fff;
+        }
+        
+        .result {
+            background: rgba(40, 40, 40, 0.9);
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 80px;
+            color: #bbb;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(100, 100, 100, 0.3);
+            color: #aaa;
+            border: 1px solid #666;
+            padding: 3px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(120, 120, 120, 0.4);
+        }
+        
+        .info {
+            color: #888;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .error {
+            color: #aa6666;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .language {
+            color: #888;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">SHADOW UNIT</div>
+            <div class="subtitle">نظام التشفير العملي - يعمل فوراً</div>
+        </div>
+        
+        <!-- التشفير -->
+        <div class="card">
+            <div class="card-title">🔒 تشفير النص</div>
+            <textarea id="inputText" placeholder="اكتب النص هنا بأي لغة..."></textarea>
+            <div class="language" id="inputLanguage">⚡ يتعرف على اللغة</div>
+            <button id="encryptBtn">تشفير</button>
+            <div class="result" id="encryptResult">
+                <button class="copy-btn" onclick="copyText('encryptResult')">نسخ</button>
+                <div id="encryptOutput">ستظهر الشفرة هنا</div>
+            </div>
+            <div class="info" id="encryptInfo"></div>
+        </div>
+        
+        <!-- فك التشفير -->
+        <div class="card">
+            <div class="card-title">🔓 فك التشفير</div>
+            <textarea id="inputCode" placeholder="الصق الشفرة هنا..."></textarea>
+            <button id="decryptBtn">فك التشفير</button>
+            <div class="error" id="decryptError"></div>
+            <div class="result" id="decryptResult">
+                <button class="copy-btn" onclick="copyText('decryptResult')">نسخ</button>
+                <div id="decryptOutput">سيعود النص الأصلي هنا</div>
+            </div>
+            <div class="info" id="decryptInfo"></div>
+        </div>
+        
+        <div class="info">
+            النظام يعمل محلياً - لا يتم إرسال أي بيانات للخارج
+        </div>
+    </div>
+
+    <script>
+        // ========== نظام التشفير العملي ==========
+        // خوارزمية بسيطة ولكنها مخصصة تماماً
+        
+        class ShadowCipher {
+            constructor() {
+                // مفتاح النظام المخفي
+                this.key = {
+                    // أعداد أولية خاصة
+                    primes: [7919, 7907, 7877, 7867],
+                    // إزاحات خاصة
+                    shifts: [3, 7, 11, 13],
+                    // توقيع النظام
+                    signature: 'SHADOW2024'
+                };
+            }
+            
+            // تحويل النص إلى أرقام
+            textToNumbers(text) {
+                const numbers = [];
+                for(let i = 0; i < text.length; i++) {
+                    // استخدم charCodeAt مع Unicode كامل
+                    numbers.push(text.charCodeAt(i));
+                }
+                return numbers;
+            }
+            
+            // تحويل الأرقام إلى نص
+            numbersToText(numbers) {
+                let text = '';
+                for(let num of numbers) {
+                    // استخدم fromCharCode مع Unicode كامل
+                    text += String.fromCharCode(num);
+                }
+                return text;
+            }
+            
+            // تطبيق خوارزمية التشفير
+            encryptNumbers(numbers) {
+                const encrypted = [];
+                const key = this.key;
+                
+                for(let i = 0; i < numbers.length; i++) {
+                    let num = numbers[i];
+                    
+                    // تطبيق سلسلة تحويلات
+                    for(let j = 0; j < key.primes.length; j++) {
+                        // XOR مع العدد الأولي
+                        num = num ^ key.primes[j];
+                        // إضافة الإزاحة
+                        num = (num + key.shifts[j]) % 65536;
+                        // تدوير البتات
+                        num = ((num << (j+1)) | (num >> (16 - (j+1)))) & 0xFFFF;
+                    }
+                    
+                    // إضافة تأثير الموضع
+                    num = (num + i * 17) % 65536;
+                    
+                    encrypted.push(num);
+                }
+                
+                return encrypted;
+            }
+            
+            // تطبيق خوارزمية فك التشفير
+            decryptNumbers(numbers) {
+                const decrypted = [];
+                const key = this.key;
+                
+                for(let i = 0; i < numbers.length; i++) {
+                    let num = numbers[i];
+                    
+                    // إلغاء تأثير الموضع
+                    num = (num - i * 17 + 65536) % 65536;
+                    
+                    // تطبيق سلسلة تحويلات عكسية
+                    for(let j = key.primes.length - 1; j >= 0; j--) {
+                        // إلغاء تدوير البتات
+                        num = ((num >> (j+1)) | (num << (16 - (j+1)))) & 0xFFFF;
+                        // إلغاء الإزاحة
+                        num = (num - key.shifts[j] + 65536) % 65536;
+                        // XOR مع العدد الأولي (نفس العملية)
+                        num = num ^ key.primes[j];
+                    }
+                    
+                    decrypted.push(num);
+                }
+                
+                return decrypted;
+            }
+            
+            // التشفير الرئيسي
+            encrypt(text) {
+                try {
+                    // تحويل النص إلى أرقام
+                    const numbers = this.textToNumbers(text);
+                    
+                    // تطبيق التشفير
+                    const encryptedNumbers = this.encryptNumbers(numbers);
+                    
+                    // تحويل إلى نص آمن
+                    let result = this.key.signature + ':';
+                    for(let num of encryptedNumbers) {
+                        // تحويل الرقم إلى حرفين hex
+                        result += num.toString(16).padStart(4, '0');
+                    }
+                    
+                    return { success: true, code: result };
+                } catch (error) {
+                    return { success: false, error: 'خطأ في التشفير' };
+                }
+            }
+            
+            // فك التشفير الرئيسي
+            decrypt(code) {
+                try {
+                    // التحقق من التوقيع
+                    if (!code.startsWith(this.key.signature + ':')) {
+                        return { success: false, error: 'شفرة غير صالحة' };
+                    }
+                    
+                    // إزالة التوقيع
+                    const hexData = code.substring(this.key.signature.length + 1);
+                    
+                    // التحقق من الطول
+                    if (hexData.length % 4 !== 0) {
+                        return { success: false, error: 'تنسيق شفرة خاطئ' };
+                    }
+                    
+                    // تحويل hex إلى أرقام
+                    const numbers = [];
+                    for(let i = 0; i < hexData.length; i += 4) {
+                        const hex = hexData.substr(i, 4);
+                        const num = parseInt(hex, 16);
+                        if (isNaN(num)) {
+                            return { success: false, error: 'شفرة تالفة' };
+                        }
+                        numbers.push(num);
+                    }
+                    
+                    // تطبيق فك التشفير
+                    const decryptedNumbers = this.decryptNumbers(numbers);
+                    
+                    // تحويل إلى نص
+                    const text = this.numbersToText(decryptedNumbers);
+                    
+                    return { success: true, text: text };
+                } catch (error) {
+                    return { success: false, error: 'خطأ في فك التشفير' };
+                }
+            }
+        }
+        
+        // ========== تهيئة النظام ==========
+        const cipher = new ShadowCipher();
+        
+        // ========== وظائف الواجهة ==========
+        function copyText(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.querySelector('div:last-child').innerText;
+            
+            if (text.includes('ستظهر') || text.includes('سيعود')) {
+                return;
+            }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // يمكن إضافة رسالة نسخ هنا إذا أردت
+            });
+        }
+        
+        function detectLanguage(text) {
+            if (!text.trim()) return '';
+            
+            if (/[\u0600-\u06FF]/.test(text)) return '🇸🇦 عربي';
+            if (/[çÇğĞıİşŞöÖüÜ]/.test(text)) return '🇹🇷 تركي';
+            if (/[éèêëÉÈÊËàâäÀÂÄôöÔÖûüÛÜçÇ]/.test(text)) return '🇫🇷 فرنسي';
+            if (/[а-яА-ЯёЁ]/.test(text)) return '🇷🇺 روسي';
+            if (/[\u4e00-\u9fff]/.test(text)) return '🇨🇳 صيني';
+            if (/[a-zA-Z]/.test(text)) return '🇺🇸 إنجليزي';
+            
+            return '🌍 أخرى';
+        }
+        
+        // ========== أحداث الصفحة ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر DOM
+            const inputText = document.getElementById('inputText');
+            const inputLanguage = document.getElementById('inputLanguage');
+            const encryptBtn = document.getElementById('encryptBtn');
+            const encryptOutput = document.getElementById('encryptOutput');
+            const encryptInfo = document.getElementById('encryptInfo');
+            
+            const inputCode = document.getElementById('inputCode');
+            const decryptBtn = document.getElementById('decryptBtn');
+            const decryptError = document.getElementById('decryptError');
+            const decryptOutput = document.getElementById('decryptOutput');
+            const decryptInfo = document.getElementById('decryptInfo');
+            
+            // تحديث اللغة أثناء الكتابة
+            inputText.addEventListener('input', function() {
+                const text = this.value;
+                if (text.length > 0) {
+                    const lang = detectLanguage(text);
+                    inputLanguage.textContent = `🌐 ${lang} | ${text.length} حرف`;
+                } else {
+                    inputLanguage.textContent = '⚡ يتعرف على اللغة';
+                }
+            });
+            
+            // زر التشفير
+            encryptBtn.addEventListener('click', function() {
+                const text = inputText.value;
+                
+                if (!text.trim()) {
+                    encryptOutput.textContent = '⚠️ أدخل نصاً';
+                    encryptInfo.textContent = '';
+                    return;
+                }
+                
+                // تشفير فوري
+                const result = cipher.encrypt(text);
+                
+                if (result.success) {
+                    encryptOutput.textContent = result.code;
+                    const lang = detectLanguage(text);
+                    encryptInfo.textContent = `✅ تم تشفير ${text.length} حرف (${lang})`;
+                } else {
+                    encryptOutput.textContent = '❌ خطأ في التشفير';
+                    encryptInfo.textContent = '';
+                }
+            });
+            
+            // زر فك التشفير
+            decryptBtn.addEventListener('click', function() {
+                const code = inputCode.value;
+                
+                if (!code.trim()) {
+                    decryptOutput.textContent = '⚠️ أدخل شفرة';
+                    decryptError.style.display = 'none';
+                    decryptInfo.textContent = '';
+                    return;
+                }
+                
+                // فك التشفير فوري
+                const result = cipher.decrypt(code);
+                
+                if (result.success) {
+                    decryptOutput.textContent = result.text;
+                    const lang = detectLanguage(result.text);
+                    decryptInfo.textContent = `✅ تم فك ${result.text.length} حرف (${lang})`;
+                    decryptError.style.display = 'none';
+                } else {
+                    decryptOutput.textContent = '❌ فشل فك التشفير';
+                    decryptError.textContent = result.error;
+                    decryptError.style.display = 'block';
+                    decryptInfo.textContent = '';
+                }
+            });
+            
+            // فك تلقائي أثناء الكتابة
+            let decryptTimer;
+            inputCode.addEventListener('input', function() {
+                clearTimeout(decryptTimer);
+                const code = this.value;
+                
+                decryptError.style.display = 'none';
+                
+                if (code.length > 30 && code.startsWith('SHADOW2024:')) {
+                    decryptTimer = setTimeout(() => {
+                        const result = cipher.decrypt(code);
+                        if (result.success) {
+                            decryptOutput.textContent = result.text;
+                            const lang = detectLanguage(result.text);
+                            decryptInfo.textContent = `🔓 فك تلقائي (${lang})`;
+                        }
+                    }, 300);
+                }
+            });
+            
+            // أمثلة
+            setTimeout(() => {
+                // مثال نصي
+                const exampleText = "مرحبا! هذا نظام تشفير SHADOW UNIT.";
+                inputText.placeholder = `مثال: ${exampleText}`;
+                
+                // مثال تشفير
+                const encrypted = cipher.encrypt(exampleText);
+                if (encrypted.success) {
+                    inputCode.placeholder = `مثال شفرة: ${encrypted.code.substring(0, 50)}...`;
+                }
+            }, 500);
+        });
+        
+        // إخفاء النظام
+        Object.freeze(ShadowCipher.prototype);
+    </script>
+</body>
+</html>
